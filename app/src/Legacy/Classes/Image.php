@@ -224,6 +224,8 @@ class Image
         if ($requester !== []) {
             $image_db['image_liked'] = (bool) $image_db['like_user_id'];
         }
+        $image_tags = [];
+        $image_tags_string = '';
         if (version_compare(cheveretoVersionInstalled(), '4.2.0', '>=')) {
             $tagsFilesTable = $tables['tags_files'];
             $tagsTable = $tables['tags'];
@@ -238,13 +240,14 @@ class Image
             $db = DB::getInstance();
             $db->query($tagsSql);
             $db->bind(':image_id', $id);
-            $image_tags = $db->fetchAll();
+            $image_tags = $db->fetchAll() ?: [];
             foreach ($image_tags as $k => $v) {
                 $image_tags[$k] = Tag::row($v['name']);
             }
-            $image_db['image_tags'] = $image_tags;
-            $image_db['image_tags_string'] = implode(', ', array_column($image_tags, 'name'));
+            $image_tags_string = implode(', ', array_column($image_tags, 'name'));
         }
+        $image_db['image_tags'] = $image_tags;
+        $image_db['image_tags_string'] = $image_tags_string;
         $return = $image_db;
         $return = $pretty ? self::formatArray($return) : $return;
         if (! isset($return['file_resource'])) {
@@ -1376,13 +1379,12 @@ class Image
         WHERE `tag_user_user_id` = :user_id
         AND FIND_IN_SET(`tag_user_tag_id`, @TAGS_IDS);
 
-        IF (@ALBUM_ID IS NOT NULL)
-        THEN
-            UPDATE `{$tagsAlbumsTable}` SET `tag_album_count` = `tag_album_count` - 1
-            WHERE `tag_album_album_id` = @ALBUM_ID
-            AND `tag_album_user_id` = :user_id
-            AND FIND_IN_SET(`tag_album_tag_id`, @TAGS_IDS);
-        END IF;
+        UPDATE `{$tagsAlbumsTable}`
+        SET `tag_album_count` = `tag_album_count` - 1
+        WHERE `tag_album_album_id` = @ALBUM_ID
+        AND `tag_album_user_id` = :user_id
+        AND FIND_IN_SET(`tag_album_tag_id`, @TAGS_IDS)
+        AND @ALBUM_ID IS NOT NULL;
 
         UPDATE `{$tagsTable}` SET `tag_files` = `tag_files` - 1
         WHERE FIND_IN_SET(`tag_id`, @TAGS_IDS);
@@ -1409,12 +1411,10 @@ class Image
             VALUES (@TAG_ID, :user_id, 1)
             ON DUPLICATE KEY UPDATE `tag_user_count` = `tag_user_count` + 1;
 
-            IF (@ALBUM_ID IS NOT NULL)
-            THEN
-                INSERT INTO `{$tagsAlbumsTable}` (`tag_album_tag_id`, `tag_album_album_id`, `tag_album_user_id`, `tag_album_count`)
-                VALUES (@TAG_ID, @ALBUM_ID, :user_id, 1)
-                ON DUPLICATE KEY UPDATE `tag_album_count` = `tag_album_count` + 1;
-            END IF;
+            INSERT INTO `{$tagsAlbumsTable}` (`tag_album_tag_id`, `tag_album_album_id`, `tag_album_user_id`, `tag_album_count`)
+            SELECT @TAG_ID, @ALBUM_ID, :user_id, 1
+            WHERE @ALBUM_ID IS NOT NULL
+            ON DUPLICATE KEY UPDATE `tag_album_count` = `tag_album_count` + 1;
 
             UPDATE `{$tagsTable}` SET `tag_files` = `tag_files` + 1
             WHERE `tag_id` = @TAG_ID;

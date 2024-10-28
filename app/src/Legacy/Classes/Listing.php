@@ -1148,7 +1148,8 @@ class Listing
             FROM `{$tagsFilesTable}` tf
             LEFT JOIN `{$filesTable}` files ON tf.tag_file_file_id = files.image_id
             LEFT JOIN `{$tagsTable}` tags ON tf.tag_file_tag_id = tags.tag_id
-            WHERE tf.tag_file_file_id IN ({$inFiles});
+            WHERE tf.tag_file_file_id IN ({$inFiles})
+            AND tags.tag_name IS NOT NULL;
 
             MySQL;
             $fetchTags = DB::queryFetchAll($tagsSQL);
@@ -1167,6 +1168,7 @@ class Listing
                 $fileToTags[$fileId][] = $tag;
             }
         }
+        /** @var callable $tagFn */
         $tagFn = require_theme_file_return('snippets/tag');
         $items = [];
         foreach ($this->output as $pos => &$row) {

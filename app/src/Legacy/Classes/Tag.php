@@ -17,7 +17,6 @@ use PDO;
 use function Chevereto\Legacy\assertNotStopWords;
 use function Chevereto\Legacy\G\get_base_url;
 use function Chevereto\Legacy\G\safe_html;
-use function Chevereto\Legacy\strip_tags_content;
 use function Chevereto\Vars\env;
 
 /**
@@ -197,15 +196,19 @@ final class Tag
             NULL,
             @TRY_TAG
         );
-        IF (@MISSING IS NOT NULL)
-        THEN
-            INSERT INTO `{$tagsTable}` (`tag_name`, `tag_user_id`)
-            VALUES (@MISSING, :tag_user_id);
-            UPDATE `{$statsTable}` SET stat_tags = stat_tags + 1 WHERE stat_type = "total";
-            INSERT `{$statsTable}` (stat_type, stat_date_gmt, stat_tags)
-            VALUES ("date", DATE(CURRENT_TIMESTAMP), 1)
-            ON DUPLICATE KEY UPDATE stat_tags = stat_tags + 1;
-        END IF;
+        INSERT INTO `{$tagsTable}` (`tag_name`, `tag_user_id`)
+        SELECT @MISSING, :tag_user_id
+        WHERE @MISSING IS NOT NULL;
+
+        UPDATE `{$statsTable}`
+        SET stat_tags = stat_tags + 1
+        WHERE stat_type = "total"
+        AND @MISSING IS NOT NULL;
+
+        INSERT INTO `{$statsTable}` (stat_type, stat_date_gmt, stat_tags)
+        SELECT "date", DATE(CURRENT_TIMESTAMP), 1
+        WHERE @MISSING IS NOT NULL
+        ON DUPLICATE KEY UPDATE stat_tags = stat_tags + 1;
 
         MySQL;
         foreach ($tag as $pos => $name) {
@@ -298,14 +301,19 @@ final class Tag
         foreach ($id as $tagId) {
             $sql .= <<<MySQL
             SET @DATE = (SELECT DATE(`tag_date_gmt`) FROM `{$tagsTable}` WHERE `tag_id` = {$tagId});
-            IF (@DATE IS NOT NULL)
-            THEN
-                DELETE FROM `{$tagsTable}` WHERE `tag_id` = {$tagId};
-                SET @ROW_COUNT = ROW_COUNT();
-                SET @DELETE_COUNT = @DELETE_COUNT + @ROW_COUNT;
-                UPDATE `{$statsTable}` SET stat_tags = GREATEST(GREATEST(0, stat_tags) - @ROW_COUNT, 0)
-                WHERE stat_type = "date" AND stat_date_gmt = @DATE;
-            END IF;
+
+            DELETE FROM `{$tagsTable}`
+            WHERE `tag_id` = {$tagId}
+            AND @DATE IS NOT NULL;
+
+            SET @ROW_COUNT = ROW_COUNT();
+            SET @DELETE_COUNT = @DELETE_COUNT + @ROW_COUNT;
+
+            UPDATE `{$statsTable}`
+            SET stat_tags = GREATEST(GREATEST(0, stat_tags) - @ROW_COUNT, 0)
+            WHERE stat_type = "date"
+            AND stat_date_gmt = @DATE
+            AND @DATE IS NOT NULL;
 
             MySQL;
         }
