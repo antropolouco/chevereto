@@ -11,8 +11,35 @@
 
 namespace Chevereto\Legacy\Classes;
 
+use Chevereto\Config\Config;
+use function Chevereto\Legacy\G\get_base_url;
+use function Chevereto\Legacy\G\get_file_extension;
+use function Chevereto\Legacy\G\is_url;
+use function Chevereto\Legacy\G\safe_html;
+use function Chevereto\Legacy\G\str_replace_last;
+use function Chevereto\Vars\get;
+use function Chevereto\Vars\post;
+
 class Page
 {
+    public static array $table_fields = [
+        'url_key',
+        'type',
+        'file_path',
+        'link_url',
+        'icon',
+        'title',
+        'description',
+        'keywords',
+        'is_active',
+        'is_link_visible',
+        'attr_target',
+        'attr_rel',
+        'sort_display',
+        'internal',
+        'code',
+    ];
+
     public static function getSingle(string $var, $by = 'url_key'): array
     {
         return [];
@@ -50,6 +77,64 @@ class Page
 
     public static function fill(array &$page): void
     {
+        $page['title_html'] = safe_html($page['title'] ?? '');
+        $type_tr = [
+            'internal' => _s('Internal'),
+            'link' => _s('Link'),
+        ];
+        $page['type_tr'] = $type_tr[$page['type']];
+
+        switch ($page['type']) {
+            case 'internal':
+                $page['url'] = get_base_url('page/' . $page['url_key']);
+                if (empty($page['file_path'])) {
+                    $filepaths = [
+                        'default' => 'default/',
+                        'user' => null, // base
+                    ];
+                    $file_basename = $page['url_key'] . '.php';
+                    foreach ($filepaths as $k => $v) {
+                        if (is_readable(self::getPath($v) . $file_basename)) {
+                            $page['file_path'] = $v . $file_basename;
+                        }
+                    }
+                } else {
+                    $page_extension = get_file_extension($page['file_path']);
+                    if (! Config::enabled()->phpPages() && $page_extension == 'php') {
+                        $page['file_path'] = str_replace_last($page_extension, 'html', $page['file_path']);
+                    }
+                    if ($page['internal'] === 'contact'
+                    && (post() !== [] || (get()['sent'] ?? '0' == '1'))) {
+                        $page_extension = 'php';
+                        $page['file_path'] = 'default/contact.php';
+                    }
+                }
+                $page['file_path_absolute'] = self::getPath($page['file_path']);
+                if (! file_exists($page['file_path_absolute'])) {
+                    self::writePage([
+                        'file_path' => $page['file_path'],
+                        'code' => $page['code'] ?? '',
+                    ]);
+                }
+
+                break;
+            case 'link':
+                $page['url'] = is_url($page['link_url']) || str_starts_with($page['link_url'], '/')
+                    ? $page['link_url']
+                    : '';
+
+                break;
+        }
+        $page['link_attr'] = 'href="' . $page['url'] . '"';
+        if ($page['attr_target'] !== '_self') {
+            $page['link_attr'] .= ' target="' . $page['attr_target'] . '"';
+        }
+        if (! empty($page['attr_rel'])) {
+            $page['link_attr'] .= ' rel="' . $page['attr_rel'] . '"';
+        }
+        if (! empty($page['icon'])) {
+            $page['title_html'] = '<span class="btn-icon ' . $page['icon'] . '"></span> ' . $page['title_html'];
+        }
     }
 
     public static function formatRowValues(mixed &$values, mixed $row = []): void
