@@ -27,6 +27,7 @@ if (str_ends_with($scriptName, 'index.php')) {
     );
     $urlPath = preg_replace('#' . $relative_root . '#', '/', $requestUri, 1);
 }
+$urlPath = strtok($urlPath, '?');
 if (in_array($urlPath, ['/upgrading', '/upgrading/'], true)
     && file_exists($appDir . '/.upgrading/upgrading.lock')) {
     require $appDir . '/upgrading.php';
