@@ -364,7 +364,6 @@ $(function () {
             .attr("data-veredict", password.verdict.replace(/ /g, "-"))
             .width(password.percent);
         $("[data-text=password-meter-message]", $parent)
-            .removeClass("red-warning")
             .text(password.verdict !== "" ? PF.fn._s(password.verdict) : "");
     });
 
@@ -867,10 +866,11 @@ $(function () {
             $(".pop-box-inner", $pop_box).css("max-height", "");
 
             if (PF.fn.isDevice(devices)) {
-                var textButton = $(".pop-btn-text,.btn-text,.text", $pop_btn)
-                    .first().text();
-                var iconButton = $(".pop-btn-icon,.btn-icon,.icon", $pop_btn)[0].outerHTML;
-                if (!$(".pop-box-header", $pop_box).exists()) {
+                var textButton = $(".pop-btn-text,.btn-text,.text", $pop_btn).first();
+                var iconButton = $(".pop-btn-icon,.btn-icon,.icon", $pop_btn);
+                if (!$(".pop-box-header", $pop_box).exists() && iconButton.exists()) {
+                    textButton = textButton.text();
+                    iconButton = iconButton[0].outerHTML;
                     $pop_box.prepend(
                         $("<div/>", {
                             class: "pop-box-header",
@@ -3869,17 +3869,16 @@ PF.fn.listing.columnizer = function (forced, animation_time, hard_forced) {
                 });
             $("li", $list_item_thumbs).css({ width: "", height: "" });
         }
-
+        var margin_gap = parseInt($(this).css("margin-right")) * (Math.max(2, PF.obj.listing.columns_number) - 1);
         var width_responsive =
             PF.obj.listing.columns_number == 1
                 ? "100%"
                 : parseFloat(
                     (1 / PF.obj.listing.columns_number) *
-                    $container.width() +
+                    ($container.width() - margin_gap) +
                     "px"
                 );
         $(this).css("width", width_responsive);
-
         if (PF.obj.listing.current_column > PF.obj.listing.columns_number) {
             PF.obj.listing.current_column = 1;
         }

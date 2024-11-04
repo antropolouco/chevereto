@@ -728,7 +728,7 @@ html.--idle .list-item-image-tools>div[data-action="viewer-close"],
     font-size: 1em;
 }
 
-.phone .list-item:not(.selected):not(.viewer) .tool-select {
+.phone .list-item:not(.viewer) .tool-flag {
     display: none;
 }
 
@@ -1596,11 +1596,13 @@ body#settings[data-route="settings"] .footer,
 body#settings[data-route="settings/profile"] .footer,
 body#settings[data-route="settings/password"] .footer,
 body#settings[data-route="settings/password"] .footer,
-body#dashboard[data-route^="dashboard/settings"] .footer {
+body#dashboard[data-route^="dashboard/settings"] .footer,
+body#dashboard[data-route^="dashboard/settings/pages/edit/"] .footer {
     bottom: 5.6em;
 }
 
-body#dashboard[data-route^="dashboard/settings/external-storage"] .footer {
+body#dashboard[data-route="dashboard/settings/external-storage"] .footer,
+body#dashboard[data-route="dashboard/settings/pages"] .footer {
     bottom: 0;
 }
 

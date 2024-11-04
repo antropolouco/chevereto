@@ -28,7 +28,7 @@ function get_theme_php_file(string $filename): string
         $file = $override;
     }
     if (! file_exists($file)) {
-        throw new LogicException('Theme file not found: ' . $filename);
+        return '';
     }
 
     return $file;
@@ -37,6 +37,9 @@ function get_theme_php_file(string $filename): string
 function require_theme_file_return(string $filename): mixed
 {
     $file = get_theme_php_file($filename);
+    if ($file === '') {
+        throw new LogicException('Theme file not found: ' . $filename);
+    }
 
     return require $file;
 }
@@ -44,6 +47,9 @@ function require_theme_file_return(string $filename): mixed
 function require_theme_file(string $filename, array $args = []): void
 {
     $file = get_theme_php_file($filename);
+    if ($file === '') {
+        throw new LogicException('Theme file not found: ' . $filename);
+    }
     $GLOBALS['theme_include_args'] = $args;
     require $file;
     unset($GLOBALS['theme_include_args']);
@@ -63,7 +69,9 @@ function get_theme_file_contents($filename)
 {
     $file = PATH_PUBLIC_LEGACY_THEME . $filename;
 
-    return file_exists($file) ? file_get_contents($file) : null;
+    return file_exists($file)
+        ? file_get_contents($file)
+        : null;
 }
 
 /**

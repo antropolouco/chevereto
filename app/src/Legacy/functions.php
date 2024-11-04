@@ -316,7 +316,7 @@ function getSystemNotices(): array
                     'Go to %s to download and install this update.',
                     '<a href="'
                     . get_base_url('dashboard?checkUpdates')
-                    . '"><i class="fas fa-tachometer-alt margin-right-035em"></i>'
+                    . '"><i class="fas fa-tachometer-alt margin-right-5"></i>'
                     . _s('Dashboard')
                     . '</a>'
                 );
@@ -328,7 +328,7 @@ function getSystemNotices(): array
                     'You need to %s.',
                     '<a href="'
                     . get_base_url('update')
-                    . '"><i class="fas fa-arrow-alt-circle-up margin-right-035em"></i>'
+                    . '"><i class="fas fa-arrow-alt-circle-up margin-right-5"></i>'
                     . _s('Update')
                     . '</a>'
                 );

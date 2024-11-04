@@ -3,8 +3,6 @@
 use Chevereto\Legacy\Classes\Settings;
 use Chevereto\Legacy\G\Handler;
 use function Chevereto\Legacy\G\require_theme_file;
-use function Chevereto\Legacy\G\require_theme_file_return;
-use function Chevereto\Legacy\getSetting;
 
 // @phpstan-ignore-next-line
 if (!defined('ACCESS') || !ACCESS) {

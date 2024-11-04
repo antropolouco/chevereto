@@ -37,6 +37,7 @@ use function Chevereto\Legacy\G\json_error;
 use function Chevereto\Legacy\G\mime_to_extension;
 use function Chevereto\Legacy\G\random_string;
 use function Chevereto\Legacy\getSetting;
+use function Chevereto\Legacy\getVariable;
 use function Chevereto\Vars\env;
 use function Chevereto\Vars\files;
 use function Chevereto\Vars\request;
@@ -76,6 +77,36 @@ return function (Handler $handler) {
             $user = User::getSingle($verify['user_id']);
         }
         $isAdmin = boolval(($user['is_admin'] ?? false));
+        $upload_enabled = $isAdmin ?: getSetting('enable_uploads');
+        $upload_allowed = $upload_enabled;
+        if ($user === []) {
+            if (! getSetting('guest_uploads')
+                || getSetting('website_privacy_mode') === 'private'
+                || $handler::cond('maintenance')
+            ) {
+                $upload_allowed = false;
+            }
+        } elseif (! $isAdmin
+            && getSetting('website_mode') === 'personal'
+            && getSetting('website_mode_personal_uid') !== ($user['id'] ?? 0)
+        ) {
+            $upload_allowed = false;
+        }
+        if ((! (bool) env()['CHEVERETO_ENABLE_LOCAL_STORAGE'])
+            && getVariable('storages_active')->nullInt() === 0
+        ) {
+            $upload_enabled = false;
+            $upload_allowed = false;
+        }
+        if ($user === []
+            && $upload_allowed
+            && getSetting('upload_max_filesize_mb_guest')
+        ) {
+            Settings::setValue('upload_max_filesize_mb_bak', getSetting('upload_max_filesize_mb'));
+            Settings::setValue('upload_max_filesize_mb', getSetting('upload_max_filesize_mb_guest'));
+        }
+        $handler::setCond('upload_enabled', $upload_enabled);
+        $handler::setCond('upload_allowed', $upload_allowed);
         if (Settings::get('enable_uploads_url') && ! $isAdmin) {
             Settings::setValue('enable_uploads_url', 0);
         }
@@ -158,7 +189,11 @@ return function (Handler $handler) {
             'tags' => $REQUEST['tags'] ?? null,
             'width' => $REQUEST['width'] ?? null,
             'expiration' => $expiration,
+            'use_file_date' => $isAdmin
+                ? ($REQUEST['use_file_date'] ?? false)
+                : false,
         ];
+
         $params = array_filter($params);
         if (! $handler::cond('content_manager') && getSetting('akismet')) {
             $user_source_db = [

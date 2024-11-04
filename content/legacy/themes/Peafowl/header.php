@@ -398,7 +398,7 @@ foreach($tags_top as $k => $v) {
                                                         ?>
                                             <li<?php if ($page['icon']) {
                                                             echo ' class="with-icon"';
-                                                        } ?>><a <?php echo $page['link_attr']; ?>><?php echo $page['title_html']; ?></a>
+                                                        } ?>><a <?php echo ($page['link_attr'] ?? ''); ?>><?php echo ($page['title_html'] ?? ''); ?></a>
                                             </li>
                     <?php
                                                     } ?>

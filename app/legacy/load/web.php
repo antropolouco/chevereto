@@ -509,8 +509,16 @@ $hook_before = function (Handler $handler) {
                 'order' => 'ASC',
             ]
         );
-        $handler::setVar('page_tos', $pages_visible_db['tos'] ?? null);
-        $handler::setVar('page_privacy', $pages_visible_db['privacy'] ?? null);
+        $pos_page_tos = array_search('tos', array_column($pages_visible_db, 'internal'));
+        $pos_page_privacy = array_search('privacy', array_column($pages_visible_db, 'internal'));
+        $page_tos = $pos_page_tos === false
+            ? null
+            : $pages_visible_db[$pos_page_tos];
+        $page_privacy = $pos_page_privacy === false
+            ? null
+            : $pages_visible_db[$pos_page_privacy];
+        $handler::setVar('page_tos', $page_tos);
+        $handler::setVar('page_privacy', $page_privacy);
     }
     if ((bool) env()['CHEVERETO_ENABLE_PAGES']) {
         foreach ($pages_visible_db ?? [] as $k => $v) {
@@ -573,7 +581,7 @@ $hook_before = function (Handler $handler) {
         $upload_allowed = false;
     }
     $handler::setCond('upload_enabled', $upload_enabled); // System allows to upload?
-    $handler::setCond('upload_allowed', $upload_allowed); // Target peer can upload?
+    $handler::setCond('upload_allowed', $upload_allowed); // Current user can upload?
     if ($handler::cond('maintenance') || $handler::cond('show_consent_screen')) {
         $handler::setCond('private_gate', true);
         $allowed_requests = ['login', 'account', 'connect', 'captcha-verify', 'oembed'];

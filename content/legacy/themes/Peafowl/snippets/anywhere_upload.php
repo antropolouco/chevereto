@@ -153,9 +153,19 @@ if (Login::isLoggedUser()) {
 			<ul id="anywhere-upload-queue" class="upload-box-queue content-width soft-hidden" data-group="upload-queue"></ul>
 			<div id="anywhere-upload-submit" class="btn-container text-align-center margin-bottom-0 soft-hidden" data-group="upload-queue-ready">
 				<div data-group="upload-queue-ready">
-					<?php
+<?php
+						if (Login::isLoggedUser()) {
+?>
+					<div class="input-label upload-input-col center-box text-align-left">
+						<label for="upload-tags"><?php _se('Tags'); ?> <span class="optional"><?php _se('optional'); ?></span></label>
+						<input autocomplete="off" data-autocomplete="tags" data-target="#upload-tags-autocomplete" type="text" id="upload-tags" name="upload-tags" class="text-input" value="<?php echo Handler::var('image_safe_html')["tags_string"] ?? ''; ?>" placeholder="<?php _se('Multiple tags may be separated by commas'); ?>" maxlength="">
+						<ul id="upload-tags-autocomplete" class="content-tags content-tags-autocomplete hide-empty"></ul>
+						<div class="input-below font-size-small"></div>
+					</div>
+<?php
+						}
                         if (Login::isLoggedUser() && Login::getUser()['album_count'] > 0) {
-                            ?>
+?>
 					<div class="input-label upload-input-col center-box text-align-left">
 						<label for="upload-album-id"><?php _ne('Album', 'Albums', 1); ?></label>
 						<select name="upload-album-id" id="upload-album-id" class="text-input">

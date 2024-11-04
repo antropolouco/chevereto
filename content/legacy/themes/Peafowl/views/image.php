@@ -8,7 +8,6 @@ use function Chevereto\Legacy\G\require_theme_file_return;
 use function Chevereto\Legacy\G\require_theme_footer;
 use function Chevereto\Legacy\G\require_theme_header;
 use function Chevereto\Legacy\G\safe_html;
-use function Chevereto\Legacy\getFriendlyExif;
 use function Chevereto\Legacy\getSetting;
 use function Chevereto\Legacy\isShowEmbedContent;
 use function Chevereto\Legacy\show_banner;

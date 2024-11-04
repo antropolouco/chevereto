@@ -66,7 +66,6 @@ return function (Handler $handler) {
         'label' => _s('Explore'),
         'icon' => 'fas fa-compass',
     ];
-
     $list['list'] = $doing === null
         ? get_route_name()
         : $doing;
@@ -95,7 +94,7 @@ return function (Handler $handler) {
             'is_video' => 1,
         ]);
     }
-    if ($doing == 'images') {
+    if ($doing == 'images' && $basename !== '') {
         $listingParams['params_hidden'] = array_merge($listingParams['params_hidden'], [
             'is_image' => 1,
             'is_video' => 0,

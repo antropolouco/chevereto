@@ -631,16 +631,32 @@ $settings_updates = [
         'arachnid_api_username' => '',
         'arachnid_api_password' => '',
     ],
+    '4.2.1' => null,
 ];
+/**
+ * The following settings are for enabling backwards compatibility
+ * It is recommended to use a proper storage device when possible!
+ *
+ * You can configure both asset/external storage from the admin dashboard.
+ */
 if ((bool) env()['CHEVERETO_ENABLE_LOCAL_STORAGE']) {
-    $settings_updates['4.2.0'] = array_merge(
-        $settings_updates['4.2.0'],
-        [
+    // Legacy application stores assets relative to root
+    // target -> /content/images/...
+    $asset_storage_default = [
+        'asset_storage_api_id' => '8',
+        'asset_storage_bucket' => PATH_PUBLIC,
+        'asset_storage_url' => URL_APP_PUBLIC_STATIC,
+    ];
+    if (env()['CHEVERETO_SERVICING'] === 'docker') {
+        // Reflect a path under /images/ which is the default persistent storage mounted path for zero config
+        // target -> /images/_assets/content/images...
+        $asset_storage_default = [
             'asset_storage_api_id' => '8',
             'asset_storage_bucket' => PATH_PUBLIC . 'images/_assets/',
             'asset_storage_url' => URL_APP_PUBLIC_STATIC . 'images/_assets/',
-        ]
-    );
+        ];
+    }
+    $settings_updates['4.2.0'] = array_merge($settings_updates['4.2.0'], $asset_storage_default);
 }
 $variables_updates = [
     '4.2.0' => [

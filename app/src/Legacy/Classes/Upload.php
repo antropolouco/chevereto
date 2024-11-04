@@ -571,7 +571,7 @@ class Upload
             } else {
                 throw new Exception(
                     'Error processing Project Arachnid Shield moderation'
-                    . ' : '
+                    . ': '
                     . $arachnid->errorMessage(),
                     600
                 );

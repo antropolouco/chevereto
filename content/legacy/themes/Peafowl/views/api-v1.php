@@ -83,6 +83,9 @@ if (!defined('ACCESS') || !ACCESS) {
 			<h3><i class="fa-solid fa-caret-right color-accent margin-right-5"></i>format <span class="optional">(optional)</span></h3>
 			<p>Return format [json, redirect, txt].</p>
 
+      <h3><i class="fa-solid fa-caret-right color-accent margin-right-5"></i>use_file_date <span class="optional">(optional, admin only)</span></h3>
+      <p>Configure to use file date taken (Exif) instead of upload date [0, 1].</p>
+
 			<h2><i class="fa-solid fa-laptop-code color-accent margin-right-5"></i><?php _se('Example call'); ?></h2>
 			<?php
 				$api = get_base_url('api/1/upload', true);

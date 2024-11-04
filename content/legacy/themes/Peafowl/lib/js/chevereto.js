@@ -435,7 +435,7 @@ CHV.fn.listingViewer = {
         var isVideo = mediaTarget.attr("data-media") == "video";
         if(isVideo) {
             mediaTarget.replaceWith(
-                '<video draggable="false" class="viewer-src no-select animate" playsinline autoplay controls src="'+this.object.image.url+'" poster="'+this.object.display_url+'"></video>'
+                '<video draggable="false" class="viewer-src no-select animate" autoplay controls loop playsinline src="'+this.object.image.url+'" poster="'+this.object.display_url+'"></video>'
             );
             $src.next().css("opacity", 0);
             setTimeout(function() {
@@ -612,7 +612,7 @@ CHV.fn.viewerLoadImage = function () {
     var height = mediaTarget.css("height");
     if(mediaTarget.attr('data-media') === 'video') {
         mediaTarget.replaceWith(
-            '<video class="media animate" controls autoplay playsinline width="'+width+'" height="'+height+'" src="'+CHV.obj.image_viewer.image.url+'" poster="'+CHV.obj.image_viewer.image.display_url+'" style="opacity: 0;"></video>'
+            '<video class="media animate" autoplay controls loop playsinline width="'+width+'" height="'+height+'" src="'+CHV.obj.image_viewer.image.url+'" poster="'+CHV.obj.image_viewer.image.display_url+'" style="opacity: 0;"></video>'
         );
         mediaTarget.src = CHV.obj.image_viewer.image.url;
     } else {
@@ -624,6 +624,7 @@ CHV.fn.viewerLoadImage = function () {
             CHV.obj.image_viewer.$container.find(".media").eq(0).remove();
             $(CHV.obj.image_viewer.container).css('height', '');
             PF.fn.loading.destroy(CHV.obj.image_viewer.$loading);
+            // CHV.obj.image_viewer.$container.find("video.media").get(0).play();
         });
 };
 
@@ -1293,7 +1294,7 @@ CHV.fn.uploader = {
                             );
                         }, false);
                     });
-                    if (/iPad|iPhone|iPod|Safari/.test(navigator.userAgent)) {
+                    if (get_browser() === "safari") {
                         video.autoplay = true;
                         video.playsInline = true;
                         video.muted = true;
@@ -1555,15 +1556,16 @@ CHV.fn.uploader = {
             source: null,
             type: queue_is_url ? "url" : "file",
             action: "upload",
-            privacy: $("[data-privacy]", this.selectors.root).first().data("privacy"),
+            privacy: $("[data-privacy]", this.selectors.root).first().data("privacy") || null,
             timestamp: this.timestamp,
             auth_token: PF.obj.config.auth_token,
-            expiration: $("[name=upload-expiration]", this.selectors.root).val() || '',
+            expiration: $("[name=upload-expiration]", this.selectors.root).val() || null,
             category_id: $("[name=upload-category-id]", this.selectors.root).val() || null,
             nsfw: $("[name=upload-nsfw]", this.selectors.root).prop("checked") ?
                 1 : 0,
             album_id: $("[name=upload-album-id]", this.selectors.root).val() || null,
-            mimetype: f.type
+            tags: $("[name=upload-tags]", this.selectors.root).val() || null,
+            mimetype: f.type,
         };
 
         // Append URL BLOB source
@@ -1575,6 +1577,11 @@ CHV.fn.uploader = {
         if (hasForm) {
             // Merge with each queue item form data
             $.each(f.formValues, function (i, v) {
+                if(i === "tags") {
+                    let fTags = v ? v.split(",") : [];
+                    let uTags = formData.tags ? formData.tags.split(",") : [];
+                    v = $.merge(fTags, uTags).join(",");
+                }
                 formData[i.replace(/image_/g, "")] = v;
             });
         }
@@ -4665,10 +4672,13 @@ $(function () {
             $(document).on("click", CHV.obj.image_viewer.loader, function (e) {
                 CHV.fn.viewerLoadImage();
             });
-            if (
-                $(CHV.obj.image_viewer.loader).data("size") >
-                CHV.obj.config.image.load_max_filesize.getBytes()
-            ) {
+            var show_loader = $(CHV.obj.image_viewer.loader).data("size") > CHV.obj.config.image.load_max_filesize.getBytes();
+            // if($(CHV.obj.image_viewer.loader).data("media") === "video"
+            //     && get_browser() === "safari"
+            // ) {
+            //     show_loader = true;
+            // }
+            if (show_loader) {
                 $(CHV.obj.image_viewer.loader).css("display", "block");
             } else {
                 CHV.fn.viewerLoadImage();

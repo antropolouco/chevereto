@@ -122,16 +122,16 @@ ul>li {
 .highlight {
     background: rgba(255, 255, 255, .5);
     -webkit-border-start: 4px solid #8e44ad;
-            border-inline-start: 4px solid #8e44ad;
+    border-inline-start: 4px solid #8e44ad;
 }
 
 .alert {
     position: relative;
     background: rgba(241, 196, 15, .3);
     -webkit-border-start: 4px solid #f1c40f;
-            border-inline-start: 4px solid #f1c40f;
+    border-inline-start: 4px solid #f1c40f;
     -webkit-padding-end: 2em;
-            padding-inline-end: 2em;
+    padding-inline-end: 2em;
 }
 
 .alert pre {
@@ -201,7 +201,7 @@ input {
     border-left-color: transparent;
     border-right-color: transparent;
     -webkit-padding-start: 0;
-            padding-inline-start: 0;
+    padding-inline-start: 0;
     transition: border-width 1s linear;
 }
 
@@ -231,9 +231,9 @@ button,
     font-size: 0.83em;
     font-weight: bold;
     -webkit-padding-end: 15px;
-            padding-inline-end: 15px;
+    padding-inline-end: 15px;
     -webkit-padding-start: 15px;
-            padding-inline-start: 15px;
+    padding-inline-start: 15px;
     line-height: 0.83em;
     outline: 0;
     cursor: pointer;
@@ -258,12 +258,12 @@ button.action,
 .button.action {
     text-shadow: 1px 1px 0 rgba(0, 0, 0, .05);
     color: #FFF;
-    background: #3498db;
+    background: rgb(0, 110, 219);
 }
 
 button.action:hover,
 .button.action:hover {
-    background: #2980b9;
+    background: rgb(0, 119, 237);
 }
 
 button[disabled],
@@ -501,7 +501,7 @@ body.body--installing .flex-box .loader {
     .flex-box+.flex-box {
         margin-top: 20px;
         -webkit-margin-start: 0;
-                margin-inline-start: 0;
+        margin-inline-start: 0;
     }
 }
 

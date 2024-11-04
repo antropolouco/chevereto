@@ -49,7 +49,6 @@ use function Chevereto\Legacy\G\get_image_fileinfo as GGet_image_fileinfo;
 use function Chevereto\Legacy\G\get_mimetype;
 use function Chevereto\Legacy\G\get_public_url;
 use function Chevereto\Legacy\G\is_animated_image;
-use function Chevereto\Legacy\G\mime_to_extension;
 use function Chevereto\Legacy\G\nullify_string;
 use function Chevereto\Legacy\G\safe_html;
 use function Chevereto\Legacy\G\seoUrlfy;
@@ -721,11 +720,11 @@ class Image
                         403
                     );
                 }
-                $temp_name = Upload::getTempNam();
-                fetch_url($source, $upload_path);
+                $temp_name = Upload::getTempNam($upload_path);
+                fetch_url($source, $temp_name);
                 $mimetype = get_mimetype($temp_name);
                 $source = [
-                    'name' => basename($source) . '.' . mime_to_extension($mimetype),
+                    'name' => basename($source),
                     'type' => $mimetype,
                     'tmp_name' => $temp_name,
                     'error' => 'UPLOAD_ERR_OK',

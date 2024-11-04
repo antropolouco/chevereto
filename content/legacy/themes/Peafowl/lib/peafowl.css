@@ -729,6 +729,11 @@ textarea, .text-input, input[type="text"]:not(.text-input) {
     color: #d74634;
 }
 
+.input-password input[type="password"][id="new-password"] {
+    -webkit-padding-end: 65px;
+    padding-inline-end: 65px;
+}
+
 .input-password .input-password-strength {
     position: absolute;
     inset-inline-end: 11px;
@@ -841,6 +846,23 @@ input.search {
     vertical-align: text-bottom;
 }
 
+input.search::-webkit-input-placeholder {
+    font-size: 1em;
+}
+
+input.search:-moz-placeholder {
+    font-size: 1em;
+}
+
+input.search::-moz-placeholder {
+    font-size: 1em;
+}
+
+input.search:-ms-input-placeholder {
+    font-size: 1em;
+}
+
+
 input.search.one-icon-padding, input.search.two-icon-padding {
     -webkit-padding-end: 2em;
     padding-inline-end: 2em;
@@ -852,8 +874,8 @@ input.search.two-icon-padding {
 }
 
 .top-bar input.search {
-    -webkit-padding-start: calc(1.4rem + 7px);
-    padding-inline-start: calc(1.4rem + 7px);
+    -webkit-padding-start: calc(1.625rem + 7px);
+    padding-inline-start: calc(1.625rem + 7px);
     position: relative;
     -webkit-padding-end: 34px;
     padding-inline-end: 34px;
@@ -893,7 +915,7 @@ input.search.two-icon-padding {
 .top-bar .input-search .icon--search {
     font-size: 1.28571429rem;
     line-height: 50px;
-    width: 1.4rem;
+    width: 1.625rem;
     left: 0;
     text-align: center;
 }
@@ -917,6 +939,7 @@ input.search.two-icon-padding {
 }
 
 .input-search .icon--close {
+    -webkit-padding-end: 0.75em;
     padding-inline-end: 0.75em;
     margin-right: -0.5em;
 }
@@ -2185,7 +2208,7 @@ body.landing .top-btn-text {
     font-size: 18px;
     width: 18px;
     font-size: 1.28571429rem;
-    width: 1.4rem;
+    width: 1.625rem;
     line-height: 50px;
     text-align: center;
 }
@@ -3762,9 +3785,9 @@ body:not(#upload) .upload-box--fixed {
     display: inline;
 }
 
-@media (min-width: 340px) {
+@media (min-width: 380px) {
     .upload-input-col {
-        width: 310px;
+        width: 350px;
     }
 }
 
