@@ -18,4 +18,4 @@ CREATE TABLE `%table_prefix%stats` (
   UNIQUE KEY `stat_date_gmt` (`stat_date_gmt`) USING BTREE,
   KEY `stat_type` (`stat_type`)
 ) ENGINE=%table_engine% DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-INSERT INTO `%table_prefix%stats` VALUES ('1', 'total', NULL, '0', '0', '0', '0', '0', '0', '0', '0');
+INSERT INTO `%table_prefix%stats` (stat_id, stat_type) VALUES (1, 'total');
