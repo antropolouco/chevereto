@@ -42,7 +42,7 @@ if (!defined('ACCESS') || !ACCESS) {
 if (!Handler::cond('allowed_nsfw_flagging')) {
     echo ' disabled';
 }
-?>><span class="no-select"><i class="fas fa-flag"></i> <?php _se('Flag not safe'); ?></span></label></span></div>
+?>><span class="no-select"><i class="fas fa-flag margin-right-5"></i><?php _se('Flag not safe'); ?></span></label></span></div>
 <div class="input-label">
     <label for="form-image-description"><?php _se('Description'); ?> <span class="optional"><?php _se('optional'); ?></span></label>
     <textarea id="form-image-description" name="form-image-description" class="text-input resize-vertical" placeholder="<?php _se('Brief description of this %s', _n('image', 'images', 1)); ?>"><?php echo Handler::var('image_safe_html')["description"] ?? ''; ?></textarea>

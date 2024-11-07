@@ -264,11 +264,15 @@ function get_chv_default_setting(string $value = '', bool $safe = false): mixed
 
 function getStorages(): array|bool
 {
+    $where = [];
+    if (version_compare(cheveretoVersionInstalled(), '4.2.0', '>=')) {
+        $where = [
+            'deleted_at' => null,
+        ];
+    }
     $storages = DB::get(
         table: 'storages',
-        where: [
-            'deleted_at' => null,
-        ],
+        where: $where,
     );
     if ($storages) {
         foreach ($storages as $k => $v) {
@@ -1164,6 +1168,7 @@ function loaderHandler(
             $envVar['CHEVERETO_XRDEBUG_HOST'] = 'host.docker.internal';
         }
     }
+    $envVar = array_map('strval', $envVar);
     new EnvVar($envVar);
     new ServerVar(array_merge($envDefault, $env, $_server));
     new CookieVar($_cookie);

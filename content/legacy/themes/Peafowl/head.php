@@ -80,7 +80,7 @@ foreach ($links as $rel => $href) {
     }
     $open_graph = [
         'type' => 'website',
-        'url' => get_current_url(true, ['lang']),
+        'url' => $links['canonical'] ?? get_current_url(safe: true, removeQs: ['lang'], public: true),
         'title' => getSetting('website_doctitle', true),
         'image' => getSetting('homepage_cover_images')[0]['url'] ?? '',
         'site_name' => Handler::var('safe_html_website_name'),
@@ -91,17 +91,26 @@ foreach ($links as $rel => $href) {
     }
     switch (true) {
         case Handler::var('image') !== null and is_route('image'):
+            $open_graph_key = match(Handler::var('image')['type']) {
+                'video' => 'video',
+                default => 'image',
+            };
+            $open_graph_type = match($open_graph_key) {
+                'video' => 'video.other',
+                default => 'article',
+            };
             $open_graph_extend = [
-                'type' => 'article',
+                'type' => $open_graph_type,
                 'title' => Handler::var('pre_doctitle'),
-                // 'description'	=> _var('image')['description'],
-                'image' => Handler::var('image')['url'],
-                'image:width' => Handler::var('image')['width'],
-                'image:height' => Handler::var('image')['height'],
+                'image' => Handler::var('image')['display_url'],
+                $open_graph_key => Handler::var('image')['url'],
+                $open_graph_key . ':width' => Handler::var('image')['width'],
+                $open_graph_key . ':height' => Handler::var('image')['height'],
+                $open_graph_key . ':type' => Handler::var('image')['mime'],
             ];
             if (Handler::var('image')['is_animated']
                 && Handler::var('image')['size'] < get_bytes('8 MB')
-                ) {
+            ) {
                 $open_graph_extend['type'] = 'video.other';
                 $open_graph_extend['url'] = Handler::var('image')['url'];
             }
@@ -134,7 +143,6 @@ foreach ($links as $rel => $href) {
         case Handler::var('album') !== null and is_route('album'):
             $open_graph_extend = [
                 'title' => Handler::var('album')['name'],
-                // 'description'	=> _var('album')['description'],
             ];
 
             break;

@@ -19,6 +19,27 @@ use function Chevereto\Legacy\headersNoCache;
  * ---------------------------------------------------------------------
  */
 
+/**
+ * @deprecate
+ */
+function include_theme_file($filename, $args = [])
+{
+    $file = PATH_PUBLIC_LEGACY_THEME . $filename;
+    $override = PATH_PUBLIC_LEGACY_THEME . 'overrides/' . $filename;
+    if (! file_exists($file)) {
+        $file .= '.php';
+        $override .= '.php';
+    }
+    if (file_exists($override)) {
+        $file = $override;
+    }
+    if (file_exists($file)) {
+        $GLOBALS['theme_include_args'] = $args;
+        require $file;
+        unset($GLOBALS['theme_include_args']);
+    }
+}
+
 function get_theme_php_file(string $filename): string
 {
     $filename = str_replace_last('.php', '', $filename) . '.php';

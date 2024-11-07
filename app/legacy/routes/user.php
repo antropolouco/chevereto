@@ -239,8 +239,7 @@ return function (Handler $handler) {
     }
     $handler::setCond('show_follow_button', $show_follow_button);
     $base_user_url = $user['url'];
-    $type = $userHome;
-    $current_view = $type;
+    $current_view = $userHome;
     $tools = false;
     foreach ($user_views as $k => $v) {
         $handler::setCond('user_' . $k, (bool) $v['current']);
@@ -251,6 +250,10 @@ return function (Handler $handler) {
             }
         }
     }
+    $type = match ($current_view) {
+        'files' => 'images',
+        default => $current_view
+    };
     $currentKey = 0;
     $safe_html_user = safe_html($user);
     $sub_tabs = [];
@@ -468,7 +471,9 @@ return function (Handler $handler) {
         $output_tpl = 'user/' . $tpl;
         if ($user_views['search']['current']) {
             $type = $user['search']['type'];
-            $where = $user['search']['type'] === 'images' ? 'WHERE image_user_id=:user_id AND MATCH(image_name, image_title, image_description, image_original_filename) AGAINST (:q)' : 'WHERE album_user_id=:user_id AND MATCH(album_name, album_description) AGAINST (:q)';
+            $where = $user['search']['type'] === 'images'
+                ? 'WHERE image_user_id=:user_id AND MATCH(image_name, image_title, image_description, image_original_filename) AGAINST (:q)'
+                : 'WHERE album_user_id=:user_id AND MATCH(album_name, album_description) AGAINST (:q)';
         }
         $show_user_items_editor = Login::isLoggedUser();
         if ($type === 'albums') {

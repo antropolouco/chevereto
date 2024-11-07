@@ -19,6 +19,7 @@ use function Chevereto\Encryption\decryptValues;
 use function Chevereto\Encryption\encryptValues;
 use function Chevereto\Encryption\hasEncryption;
 use function Chevereto\Legacy\assertMaxCount;
+use function Chevereto\Legacy\cheveretoVersionInstalled;
 use function Chevereto\Legacy\G\add_ending_slash;
 use function Chevereto\Legacy\G\array_filter_array;
 use function Chevereto\Legacy\G\check_value;
@@ -60,8 +61,12 @@ class Storage
 
     public static function get(array $values = [], array $sort = [], int $limit = null): array
     {
-        if (! isset($values['deleted_at'])) {
-            $values['deleted_at'] = null;
+        $valueOperators = [
+            'type_chain' => '&',
+        ];
+        if (version_compare(cheveretoVersionInstalled(), '4.2.0', '>=')) {
+            $values['deleted_at'] = $values['deleted_at'] ?? null;
+            $valueOperators['deleted_at'] = 'IS';
         }
         $get = DB::get(
             [
@@ -75,10 +80,7 @@ class Storage
             $sort,
             $limit,
             PDO::FETCH_ASSOC,
-            [
-                'type_chain' => '&',
-                'deleted_at' => 'IS',
-            ]
+            $valueOperators
         );
         if (isset($get[0]) && is_array($get[0])) {
             foreach ($get as $k => $v) {

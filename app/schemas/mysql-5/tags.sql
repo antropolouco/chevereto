@@ -11,7 +11,7 @@ CREATE TABLE `%table_prefix%tags` (
   UNIQUE KEY `tag_name` (`tag_name`) USING BTREE,
   KEY `tag_user_id` (`tag_user_id`),
   KEY `tag_date_gmt` (`tag_date_gmt`),
-  KEY `tag_files` (`tag_files`),˝
+  KEY `tag_files` (`tag_files`),
   KEY `tag_views` (`tag_views`),
   KEY `tag_user_id_date_gmt` (`tag_user_id`,`tag_date_gmt`),
   KEY `tag_user_id_files` (`tag_user_id`,`tag_files`),

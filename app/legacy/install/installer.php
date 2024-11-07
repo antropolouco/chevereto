@@ -86,6 +86,7 @@ $db_array = [
 ];
 $error = false;
 $db_conn_error = "Can't connect to the target database. The server replied with this:<br>%s<br><br>Please fix your MySQL info.";
+$installed_version = cheveretoVersionInstalled();
 $settings_updates = [
     '3.0.0' => [
         'analytics_code' => '',
@@ -632,7 +633,9 @@ $settings_updates = [
         'arachnid_api_password' => '',
     ],
     '4.2.1' => null,
+    '4.2.2' => null,
 ];
+
 /**
  * The following settings are for enabling backwards compatibility
  * It is recommended to use a proper storage device when possible!
@@ -640,21 +643,23 @@ $settings_updates = [
  * You can configure both asset/external storage from the admin dashboard.
  */
 if ((bool) env()['CHEVERETO_ENABLE_LOCAL_STORAGE']) {
-    // Legacy application stores assets relative to root
-    // target -> /content/images/...
+    // Reflect a path under /images/ which is the default persistent storage mounted path for zero config
+    // target -> /images/_assets/content/images...
     $asset_storage_default = [
         'asset_storage_api_id' => '8',
-        'asset_storage_bucket' => PATH_PUBLIC,
-        'asset_storage_url' => URL_APP_PUBLIC_STATIC,
+        'asset_storage_bucket' => PATH_PUBLIC . 'images/_assets/',
+        'asset_storage_url' => env()['CHEVERETO_HOSTNAME_PATH'] . 'images/_assets/',
     ];
-    if (env()['CHEVERETO_SERVICING'] === 'docker') {
-        // Reflect a path under /images/ which is the default persistent storage mounted path for zero config
-        // target -> /images/_assets/content/images...
-        $asset_storage_default = [
-            'asset_storage_api_id' => '8',
-            'asset_storage_bucket' => PATH_PUBLIC . 'images/_assets/',
-            'asset_storage_url' => URL_APP_PUBLIC_STATIC . 'images/_assets/',
-        ];
+    if ($installed_version !== '') {
+        // Legacy application stores assets relative to root
+        // target -> /content/images/...
+        if (env()['CHEVERETO_SERVICING'] === 'server') {
+            $asset_storage_default = [
+                'asset_storage_api_id' => '8',
+                'asset_storage_bucket' => PATH_PUBLIC,
+                'asset_storage_url' => env()['CHEVERETO_HOSTNAME_PATH'],
+            ];
+        }
     }
     $settings_updates['4.2.0'] = array_merge($settings_updates['4.2.0'], $asset_storage_default);
 }
@@ -780,7 +785,6 @@ if (hasEnvDbInfo()) {
     $doing = 'ready';
 }
 $fulltext_engine = 'InnoDB';
-$installed_version = cheveretoVersionInstalled();
 $maintenance = getSetting('maintenance');
 if (isset($cheveretoFreeMap[$installed_version])) {
     $installed_version = $cheveretoFreeMap[$installed_version];
@@ -1034,7 +1038,7 @@ if ($installed_version !== '' && empty($paramsCheck)) {
                     ],
                     'login_secret' => [
                         'op' => 'MODIFY',
-                        'type' => $isUtf8mb4 ? 'mediumtext' : 'text', //3.13.0
+                        'type' => 'text',
                         'prop' => "DEFAULT NULL COMMENT 'The secret part'",
                     ],
                 ],
@@ -1048,12 +1052,12 @@ if ($installed_version !== '' && empty($paramsCheck)) {
                 'settings' => [
                     'setting_value' => [
                         'op' => 'MODIFY',
-                        'type' => $isUtf8mb4 ? 'mediumtext' : 'text', //3.13.0
+                        'type' => 'text', //3.13.0
                         'prop' => null,
                     ],
                     'setting_default' => [
                         'op' => 'MODIFY',
-                        'type' => $isUtf8mb4 ? 'mediumtext' : 'text', //3.13.0
+                        'type' => 'text', //3.13.0
                         'prop' => null,
                     ],
                 ],
@@ -1088,7 +1092,7 @@ if ($installed_version !== '' && empty($paramsCheck)) {
                 'images' => [
                     'image_original_exifdata' => [
                         'op' => 'MODIFY',
-                        'type' => 'longtext',
+                        'type' => 'text',
                         'prop' => null,
                     ],
                     'image_storage' => [
@@ -1256,12 +1260,12 @@ if ($installed_version !== '' && empty($paramsCheck)) {
                 'storages' => [
                     'storage_key' => [
                         'op' => 'MODIFY',
-                        'type' => $isUtf8mb4 ? 'mediumtext' : 'text', //3.13.0
+                        'type' => 'text', //3.13.0
                         'prop' => null,
                     ],
                     'storage_secret' => [
                         'op' => 'MODIFY',
-                        'type' => $isUtf8mb4 ? 'mediumtext' : 'text', //3.13.0
+                        'type' => 'text', //3.13.0
                         'prop' => null,
                     ],
                 ],
@@ -1829,7 +1833,7 @@ if ($installed_version !== '' && empty($paramsCheck)) {
                 'pages' => [
                     'page_code' => [
                         'op' => 'MODIFY',
-                        'type' => 'mediumtext',
+                        'type' => 'text',
                         'prop' => null,
                     ],
                 ],
@@ -2406,7 +2410,7 @@ EOT;
                         ADD `image_source_md5` varchar(32) DEFAULT NULL,
                         ADD `image_storage_mode` enum('datefolder','direct','old') NOT NULL DEFAULT 'datefolder',
                         ADD `image_original_filename` text NOT NULL,
-                        ADD `image_original_exifdata` longtext,
+                        ADD `image_original_exifdata` text,
                         ADD `image_views` bigint(32) NOT NULL DEFAULT '0',
                         ADD `image_category_id` bigint(32) DEFAULT NULL,
                         ADD `image_chain` tinyint(128) NOT NULL,

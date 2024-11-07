@@ -1102,6 +1102,9 @@ function getComments(): string
 var disqus_config = function() {
 	this.page.url = "%page_url";
 	this.page.identifier = "%page_id";
+    this.language = "%language_code";
+	this.page.remote_auth_s3 = "%auth";
+	this.page.api_key = "%api_key";
 };
 (function() {
 	var d = document, s = d.createElement("script");
@@ -1109,14 +1112,9 @@ var disqus_config = function() {
 	s.setAttribute("data-timestamp", +new Date());
 	(d.head || d.body).appendChild(s);
 })();
-var disqus_config = function () {
-	this.language = "%language_code";
-	this.page.remote_auth_s3 = "%auth";
-	this.page.api_key = "%api_key";
-};
 </script>
 <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>', [
-                '%page_url' => get_current_url(),
+                '%page_url' => Handler::var('canonical') ?? get_current_url(removeQs: ['lang'], public: true),
                 '%page_id' => str_replace_first(get_route_path(), get_route_name(), get_route_path(true)), // image.ID
                 '%shortname' => getSetting('disqus_shortname'),
                 '%language_code' => get_language_used()['base'],

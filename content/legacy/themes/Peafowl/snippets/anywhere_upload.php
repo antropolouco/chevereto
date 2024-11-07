@@ -228,7 +228,7 @@ if (Login::isLoggedUser()) {
 					<?php
                         if (getSetting('theme_nsfw_upload_checkbox') && !getSetting('enable_consent_screen')) {
                             ?>
-					<div class="margin-20"><span rel="tooltip" data-tiptip="top" title="<?php _se('Mark this if the upload is not family safe'); ?>"><input type="checkbox" name="upload-nsfw" id="upload-nsfw" class="margin-right-5" value="1"><label for="upload-nsfw"><?php _se('Not family safe upload'); ?></label></span></div>
+					<div class="margin-20"><span rel="tooltip" data-tiptip="top" title="<?php _se('Mark this if the upload is not family safe'); ?>"><input type="checkbox" name="upload-nsfw" id="upload-nsfw" class="margin-right-5" value="1"><label for="upload-nsfw"><i class="fas fa-flag margin-right-5"></i><?php _se('Flag not safe'); ?></label></span></div>
 					<?php
                         }
                         if (!Login::isLoggedUser()) {
@@ -387,7 +387,7 @@ if (Login::isLoggedUser()) {
 				<div class="checkbox-label">
 					<div class="display-inline" rel="template-tooltip" data-tiptip="right" data-title="<?php _se('Mark this if the image is not family safe'); ?>">
 						<label for="form-nsfw">
-							<input class="float-left" type="checkbox" name="form-nsfw" id="form-nsfw" value="1"><?php _se('Flag as unsafe'); ?>
+							<input class="float-left" type="checkbox" name="form-nsfw" id="form-nsfw" value="1"><span class="no-select"><i class="fas fa-flag margin-right-5"></i><?php _se('Flag not safe'); ?></span></label></span>
 						</label>
 					</div>
 				</div>

@@ -993,7 +993,7 @@ return function (Handler $handler) {
                             throw new Exception('Invalid request', 403);
                         }
                         $query_field = 'nsfw';
-                        $prop = $editing['nsfw'] ?? 0;
+                        $prop = (int) ($editing['nsfw'] ?? 0);
                         $prop = intval($prop === 1);
                         $message = 'Content flag changed';
 
