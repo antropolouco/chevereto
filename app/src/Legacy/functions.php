@@ -1173,15 +1173,24 @@ function loaderHandler(
     new FilesVar($_files);
     require_once PATH_APP . 'configurator.php';
     if ($_session === []) {
-        $sessionStart = session_start([
+        $session_start = false;
+        $session_options = [
             'save_handler' => Config::system()->sessionSaveHandler(),
             'save_path' => Config::system()->sessionSavePath(),
             'cookie_path' => Config::host()->hostnamePath(),
             'cookie_domain' => Config::host()->hostname(),
             'cookie_secure' => Config::host()->isHttps(),
             'cookie_httponly' => true,
-        ]);
-        if (! $sessionStart) {
+        ];
+
+        try {
+            $session_start = session_start($session_options);
+        } catch (Throwable) {
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                $session_start = true;
+            }
+        }
+        if (! $session_start) {
             throw new RuntimeException(
                 'Sessions not working (session_start)',
                 600
