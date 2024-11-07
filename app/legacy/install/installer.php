@@ -2186,6 +2186,12 @@ if ($installed_version !== '' && empty($paramsCheck)) {
                 SQL;
             }
         }
+        $APP_VERSION = APP_VERSION;
+        $sql_update[] = <<<MySQL
+        INSERT INTO `%table_prefix%variables` (variable_name, variable_value, variable_type)
+        VALUES ("chevereto_version_installed", "{$APP_VERSION}", "string")
+        ON DUPLICATE KEY UPDATE variable_value = "{$APP_VERSION}", variable_type = "string";
+        MySQL;
         if (! $maintenance) {
             $sql_update[] = 'UPDATE `%table_prefix%settings` SET `setting_value` = 0 WHERE `setting_name` = "maintenance";';
         }
@@ -2239,9 +2245,6 @@ if ($installed_version !== '' && empty($paramsCheck)) {
             logger("[STATUS] Updating Chevereto database (this may take a while)...\n");
             logger("[SQL]\n{$sql_update}\n");
             $updated = $db->exec();
-            if ($updated) {
-                Variable::set('chevereto_version_installed', APP_VERSION);
-            }
         } catch (Throwable $e) {
             throw new LogicException(
                 (string) message(
