@@ -1095,10 +1095,10 @@ msgstr[1] "segundos"
 
 #, php-format
 msgid "%s ago"
-msgstr "a %s atrás"
+msgstr "há %s"
 
 msgid "moments ago"
-msgstr "a momentos atrás"
+msgstr "há poucos segundos"
 
 msgid "There is an update available for your system."
 msgstr "Há uma atualização disponível para o seu sistema."
@@ -3505,7 +3505,7 @@ msgstr "Adicionado a %a em %s %t"
 
 #, php-format
 msgid "Added to %s"
-msgstr "Adicionar a %s"
+msgstr "Adicionado a %s"
 
 #, php-format
 msgid "Uploaded to %s"
