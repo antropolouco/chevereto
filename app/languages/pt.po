@@ -584,7 +584,7 @@ msgid "%s ago"
 msgstr "%s atrás"
 
 msgid "moments ago"
-msgstr "à momentos atrás"
+msgstr "há poucos segundos"
 
 msgid "Random"
 msgstr "Aleatório"
@@ -1514,7 +1514,7 @@ msgstr "Endereço de email"
 
 #, php-format
 msgid "Added to %s"
-msgstr "Adicionar a %s"
+msgstr "Adicionado a %s"
 
 msgid "Add IP ban"
 msgstr "Adicionar banimento de IP"
